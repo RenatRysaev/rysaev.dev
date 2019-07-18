@@ -1,9 +1,9 @@
 {
-  "name": "gatsby-starter-blog",
+  "name": "RenatRysaev's blog",
   "private": true,
-  "description": "A starter for a blog powered by Gatsby and Markdown",
+  "description": "Blog about web-development",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "renat Rysaev <renat.rysaev@gmail.com>",
   "bugs": {
     "url": "https://github.com/gatsbyjs/gatsby/issues"
   },
@@ -38,7 +38,6 @@
   "devDependencies": {
     "prettier": "^1.18.2"
   },
-  "homepage": "https://github.com/gatsbyjs/gatsby-starter-blog#readme",
   "keywords": [
     "gatsby"
   ],
