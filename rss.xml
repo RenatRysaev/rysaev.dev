@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Блог о веб-разработке(frontend, backend)]]></description><link>https://gatsby-starter-blog-demo.netlify.com/</link><generator>RSS for Node</generator><lastBuildDate>Thu, 18 Jul 2019 17:59:27 GMT</lastBuildDate><item><title><![CDATA[Знакомство]]></title><description><![CDATA[Кто я такой ? Меня зовут Ренат и сейчас я живу в Челябинске. Я работаю в софтверной компании на позиции ведущего frontend-разработчика. Мне…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//about-me/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//about-me/</guid><pubDate>Thu, 18 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Кто я такой ?&lt;/h2&gt;
+&lt;p&gt;Меня зовут Ренат и сейчас я живу в Челябинске.&lt;br&gt;
+Я работаю в софтверной компании на позиции ведущего frontend-разработчика.&lt;br&gt;
+Мне нравится изучать разные новые штуки и расширять кругозор.&lt;br&gt;
+В текущий момент использую react и все то разнообразие, которое существует вокруг этой библиотеки(те кто использует react поймут меня). &lt;/p&gt;
+&lt;h2&gt;О чем я буду писать ?&lt;/h2&gt;
+&lt;p&gt;Преимущественно о тех вещах, которые мне интересны в n-ый промежуток времени.
+К примеру, я решил сделать проект с помощью &lt;del&gt;php и jq&lt;/del&gt; и напишу выжимку о том как я это делал и с какими трудностями столкнулся.&lt;/p&gt;
+&lt;h2&gt;Зачем мне это нужно ?&lt;/h2&gt;
+&lt;p&gt;Если кратко - поделиться знаниями и развить софты.  &lt;/p&gt;
+&lt;p&gt;Я считаю, что написание статей принесет следующий профит:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Те же самые софты&lt;/li&gt;
+&lt;li&gt;Технические - чтобы объяснить, нужно разобраться самому&lt;/li&gt;
+&lt;li&gt;Возможно будет интересно и полезно для читателей&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item></channel></rss>
