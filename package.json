@@ -1,11 +1,11 @@
 {
-  "name": "RenatRysaev's blog",
+  "name": "Blog-about-web",
   "private": true,
   "description": "Blog about web-development",
   "version": "0.1.0",
-  "author": "renat Rysaev <renat.rysaev@gmail.com>",
+  "author": "Renat Rysaev <renat.rysaev@gmail.com>",
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/RenatRysaev/blog/issues"
   },
   "dependencies": {
     "gatsby": "^2.13.25",
