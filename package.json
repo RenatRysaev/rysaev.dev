@@ -56,6 +56,6 @@
     "start": "yarn run develop",
     "serve": "gatsby serve",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\"",
-    "deploy": "yarn run build && gh-pages -d public"
+    "deploy": "yarn run build && gh-pages -d public -b gh-pages"
   }
 }
