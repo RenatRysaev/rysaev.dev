@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Блог о веб-разработке(frontend, backend)]]></description><link>https://gatsby-starter-blog-demo.netlify.com/</link><generator>RSS for Node</generator><lastBuildDate>Sun, 21 Jul 2019 00:12:12 GMT</lastBuildDate><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 1.]]></title><description><![CDATA[Я планирую серию статей, в которых постараюсь раскрыть следующие темы: Docker для разработки React-приложения CI/CD с использованием Jenkins…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//react-ci-cd/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//react-ci-cd/</guid><pubDate>Sun, 21 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Я планирую серию статей, в которых постараюсь раскрыть следующие темы:&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Блог о веб-разработке(frontend, backend)]]></description><link>https://gatsby-starter-blog-demo.netlify.com/</link><generator>RSS for Node</generator><lastBuildDate>Sun, 21 Jul 2019 21:10:43 GMT</lastBuildDate><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 1.]]></title><description><![CDATA[Я планирую серию статей, в которых постараюсь раскрыть следующие темы: Docker для разработки React-приложения CI/CD с использованием Jenkins…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//react-ci-cd-1/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//react-ci-cd-1/</guid><pubDate>Sun, 21 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Я планирую серию статей, в которых постараюсь раскрыть следующие темы:&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;b&gt;Docker для разработки React-приложения&lt;/b&gt;&lt;/li&gt;
 &lt;li&gt;&lt;b&gt;CI/CD с использованием Jenkins&lt;/b&gt;&lt;/li&gt;
@@ -27,29 +27,21 @@
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;create-react-app dockerized-react
 &lt;span class=&quot;token function&quot;&gt;cd&lt;/span&gt; dockerized-react&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;Напишем наш Dockerfile для создания образа&lt;/h3&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;#1
+&lt;p&gt;&lt;b&gt;Dockerfile&lt;/b&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# Берем node.js v8 в качестве родительского образа
 FROM node:8
-#2
+# Устанавливаем рабочую директорию
 WORKDIR /app
-#3
-COPY yarn.lock /app/
-COPY package.json /app/
-#4
+# Копируем файлы yarn.lock и package.json в рабочую директорию
+COPY package.json yarn.lock /app/
+# Устанавливаем зависимости
 RUN yarn install
-#5
+# Открываем порт 3000
 EXPOSE 3000
-#6
+# Запускаем React-приложение после запуска контейнера
 CMD [&amp;quot;yarn&amp;quot;, &amp;quot;start&amp;quot;]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h3&gt;Теперь пошагово разберемся из каких команд состоит Dockerfile:&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;В качестве родительского образа берем node.js v8&lt;/li&gt;
-&lt;li&gt;Установим рабочую директорию /app&lt;/li&gt;
-&lt;li&gt;Скопируем файлы yarn.lock и package.json в контейнер&lt;/li&gt;
-&lt;li&gt;Установим необходимые зависимости&lt;/li&gt;
-&lt;li&gt;Откроем порт 3000&lt;/li&gt;
-&lt;li&gt;Запускаем React-приложение после запуска контейнера&lt;/li&gt;
-&lt;/ol&gt;
 &lt;h3&gt;Добавим в .dockerignore директории/файлы, которые не должны попасть в образ&lt;/h3&gt;
+&lt;p&gt;&lt;b&gt;.dockerignore&lt;/b&gt;&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;.git
 node_modules
 build&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -68,19 +60,91 @@ build&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;li&gt;“-e CHOKIDAR_USEPOLLING=true” - устанавливаем переменную окружения для принудительного слежения webpack за нашим томом.&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;&lt;b&gt;Осталось открыть приложение в браузере &lt;a href=&quot;http://localhost:3001/&quot;&gt;http://localhost:3001/&lt;/a&gt;&lt;/b&gt;&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Готово, теперь webpack отслеживает изменения файлов и изменив код в каком-либо файле мы сможем увидеть результат в браузере.&lt;/b&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Знакомство]]></title><description><![CDATA[Кто я такой ? Меня зовут Ренат и сейчас я живу в Челябинске. Я работаю в софтверной компании на позиции ведущего frontend-разработчика. Мне…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//about-me/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//about-me/</guid><pubDate>Thu, 18 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Кто я такой ?&lt;/h2&gt;
-&lt;p&gt;Меня зовут Ренат и сейчас я живу в Челябинске.&lt;br&gt;
-Я работаю в софтверной компании на позиции ведущего frontend-разработчика.&lt;br&gt;
-Мне нравится изучать новые технологии и расширять кругозор.&lt;br&gt;
-В текущий момент использую react и все то разнообразие, которое существует вокруг этой библиотеки(те кто использует react поймут меня). &lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Готово, теперь webpack отслеживает изменения файлов и изменив код в каком-либо файле мы сможем увидеть результат в браузере.&lt;/b&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 2.]]></title><description><![CDATA[Это вторая часть, в которой мы разберемся с тем как подготовить окружение для развертывания Docker + React В прошлой части мы настраивали…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//react-ci-cd-2/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//react-ci-cd-2/</guid><pubDate>Sun, 21 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;Это вторая часть, в которой мы разберемся с тем как подготовить окружение для развертывания Docker + React&lt;/h3&gt;
+&lt;p&gt;&lt;b&gt;В &lt;a href=&quot;http://localhost:8000/react-ci-cd-1/&quot;&gt;прошлой части&lt;/a&gt; мы настраивали окружение для
+разработки нашего приложения, пришло время подготовить окружения для деплоя.&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Сегодня мы напишем второй Dockerfile для деплоя + настроим Nginx для раздачи статики.&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;Первым делом давайте переименуем уже существующий Dockerfile -&gt; Dockerfile.dev.&lt;br&gt;
+Затем создадим второй докерфайл, назвав его Dockerfile.prod, который мы будем использовать для продакшена.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Dockerfile.prod&lt;/b&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# Берем в качестве родительского образа node:8-apline и назовем эту ступень сборки &amp;quot;build-stage&amp;quot;
+FROM node:8-alpine as build-stage
+# Устанавливаем рабочую директорию
+WORKDIR /app
+# Копируем файлы package.json yarn.lock в рабочую директорию
+COPY package.json yarn.lock /app/
+# Устаналиваем зависимости
+RUN yarn install
+# Копируем исходники в рабочую директорию
+COPY . /app/
+# Собираем проект
+RUN yarn build
+
+# Вторая ступень сборки, поднимем nginx для раздачи статики
+FROM nginx:stable-alpine
+# Копируем билд из ступени сборки &amp;quot;build-stage&amp;quot; в директорию образа /usr/share/nginx/html
+COPY --from=build-stage /app/build /usr/share/nginx/html
+# Копируем конфиг nginx в директорию образа /etc/nginx/nginx.conf (Напишем его позже)
+COPY nginx.conf /etc/nginx/nginx.conf
+# Открываем 80 порт
+EXPOSE 80
+# Указываем команду, поднимающую nginx при запуске контейнера
+CMD [&amp;quot;nginx&amp;quot;, &amp;quot;-g&amp;quot;, &amp;quot;daemon off;&amp;quot;]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Напишем конфиг для Nginx&lt;/h3&gt;
+&lt;p&gt;&lt;b&gt;nginx.conf&lt;/b&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# Автоматически определяем количество процессов
+worker_processes auto;
+events {
+    # Устанавливаем максимальное кол-во соединений для одного рабочего процесса
+    worker_connections 8000;
+    # Указывем nginx, чтобы он пытался принять максимльное кол-во подключений
+    multi_accept on;
+}
+http {
+    # Указываем корректные заголовки для всех типов расширений
+    include mime.types;
+    default_type application/octet-stream;
+    # Увеличиваем производительность
+    sendfile on;
+    # Сжимаем данные
+    gzip on;
+    gzip_comp_level 6;
+    gzip_min_length 100;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    server {
+        index index.html index.htm;
+        # Слушаем 80 порт
+        listen 80;
+        # Директория из которой раздаем статику
+        root /usr/share/nginx/html; 
+    }
+    # Сначала пытаемся обработать запрос как к файлу или директории
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Собираем образ и запускаем контейнер&lt;/h3&gt;
+&lt;p&gt;Для того, чтобы собрать образ выполните:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;docker build -t dockerized-app -f Dockerfile.prod &lt;span class=&quot;token keyword&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Для того, чтобы запустить контейнер и убедиться в том, что Nginx раздает статику выполните:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;docker run -it -p 80:80 dockerized-app&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Откройте &lt;a href=&quot;http://localhost/&quot;&gt;localhost&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Готово, теперь мы имеем контейнер с Nginx, который умеет раздавать сборку нашего приложения.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;В следующей статье мы будем разбираться с тем как с помощью Jenkins развернуть наш Docker-контейнер
+на удаленном сервере.&lt;/b&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Знакомство]]></title><description><![CDATA[Кто я такой ? Меня зовут Ренат, я живу в Челябинске и работаю в компании по разработке ПО на позиции ведущего frontend-разработчика. Мне…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//about-me/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//about-me/</guid><pubDate>Thu, 18 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Кто я такой ?&lt;/h2&gt;
+&lt;p&gt;Меня зовут Ренат, я живу в Челябинске и работаю в компании по разработке ПО на позиции ведущего frontend-разработчика.&lt;br&gt;
+Мне нравится изучать новые технологии и расширять свой кругозор.&lt;br&gt;
+В текущий момент использую React и все то разнообразие, которое существует вокруг этой библиотеки. &lt;/p&gt;
 &lt;h2&gt;О чем я буду писать ?&lt;/h2&gt;
-&lt;p&gt;Преимущественно о тех вещах, которые мне интересны в n-ый промежуток времени.
-К примеру, я решил сделать проект с помощью &lt;del&gt;php и jq&lt;/del&gt; и напишу выжимку о том как я это делал и с какими трудностями столкнулся.&lt;/p&gt;
+&lt;p&gt;Преимущественно о тех вещах, которые мне интересны в определенный промежуток времени.
+К примеру, я занимался разработкой проекта на &lt;del&gt;php и jq&lt;/del&gt; и спустя некоторое время
+научился использовать эти вещи &lt;del&gt;как батя&lt;/del&gt;. Приобретя некоторый опыт, я напишу статью
+о том с какими трудностями я сталкивался и как старался их решить.&lt;/p&gt;
 &lt;h2&gt;Зачем мне это нужно ?&lt;/h2&gt;
-&lt;p&gt;Если кратко - поделиться знаниями и развить софты.  &lt;/p&gt;
-&lt;p&gt;Я считаю, что написание статей принесет следующий профит:&lt;/p&gt;
+&lt;p&gt;Я считаю, что написание статей принесет следующую пользу:&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;Те же самые софты&lt;/li&gt;
-&lt;li&gt;Технические - чтобы объяснить, нужно разобраться самому&lt;/li&gt;
-&lt;li&gt;Надеюсь будет полезно и интересно для читателей&lt;/li&gt;
+&lt;li&gt;Навык излагать свои мысли понятно, доходчиво и сжато в письменной форме&lt;/li&gt;
+&lt;li&gt;Технические навыки&lt;/li&gt;
+&lt;li&gt;Я надеюсь это принесет пользу читателям&lt;/li&gt;
 &lt;/ol&gt;</content:encoded></item></channel></rss>
