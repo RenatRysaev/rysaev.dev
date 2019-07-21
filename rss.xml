@@ -1,4 +1,74 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Блог о веб-разработке(frontend, backend)]]></description><link>https://gatsby-starter-blog-demo.netlify.com/</link><generator>RSS for Node</generator><lastBuildDate>Fri, 19 Jul 2019 11:13:30 GMT</lastBuildDate><item><title><![CDATA[Знакомство]]></title><description><![CDATA[Кто я такой ? Меня зовут Ренат и сейчас я живу в Челябинске. Я работаю в софтверной компании на позиции ведущего frontend-разработчика. Мне…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//about-me/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//about-me/</guid><pubDate>Thu, 18 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Кто я такой ?&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Блог о веб-разработке(frontend, backend)]]></description><link>https://gatsby-starter-blog-demo.netlify.com/</link><generator>RSS for Node</generator><lastBuildDate>Sun, 21 Jul 2019 00:01:16 GMT</lastBuildDate><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 1.]]></title><description><![CDATA[Я планирую серию статей, в которых постараюсь раскрыть следующие темы: Docker для разработки React-приложения CI/CD с использованием Jenkins…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//react-ci-cd/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//react-ci-cd/</guid><pubDate>Fri, 19 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Я планирую серию статей, в которых постараюсь раскрыть следующие темы:&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;b&gt;Docker для разработки React-приложения&lt;/b&gt;&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;CI/CD с использованием Jenkins&lt;/b&gt;&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;Nginx для раздачи статики&lt;/b&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Это первая часть, в которой мы разберемся с тем как настроить окружение для разработки с Docker + React&lt;/h3&gt;
+&lt;h3&gt;Вступление&lt;/h3&gt;
+&lt;p&gt;Все началось с того, что однажды на рабочем проекте потребовалось обновить зависимости.
+После долгих мучений я наконец-то запушил свой коммит в репозиторий и отправился к нашему девопсу,
+чтобы попросить задеплоить сборку из jenkins на тестовый сервер. Ну и как вы уже, наверное, догадываетесь девопсу этого сделать
+не удалось, потому что на сервере с jenkins стояла node.js другой версии и закешировались старые версии библиотек.
+Я бы скорее всего решил эту проблему, но на следующий рабочий день меня переводили на другой проект.&lt;/p&gt;
+&lt;p&gt;Ну собственно я к чему, используя docker, мы точно бы тогда не имели этих проблем, и вот почему:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Единое окружение локально и на сервере&lt;/li&gt;
+&lt;li&gt;Воспроизводимость&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Поэтому я решил немного раскурить Docker и поделиться полезной информацией о том
+как его использовать для разработки и деплоя.  &lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Предпологается что на вашей машине уже установлено:&lt;/b&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.docker.com/&quot;&gt;Docker&lt;/a&gt; v18.09.2&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/facebook/create-react-app&quot;&gt;Create React App&lt;/a&gt; v3.0.1&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Создание проекта&lt;/h3&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;create-react-app dockerized-react
+&lt;span class=&quot;token function&quot;&gt;cd&lt;/span&gt; dockerized-react&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Напишем наш Dockerfile для создания образа&lt;/h3&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;#1
+FROM node:8
+#2
+WORKDIR /app
+#3
+COPY yarn.lock /app/
+COPY package.json /app/
+#4
+RUN yarn install
+#5
+EXPOSE 3000
+#6
+CMD [&amp;quot;yarn&amp;quot;, &amp;quot;start&amp;quot;]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Теперь пошагово разберемся из каких команд состоит Dockerfile:&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;В качестве родительского образа берем node.js v8&lt;/li&gt;
+&lt;li&gt;Установим рабочую директорию /app&lt;/li&gt;
+&lt;li&gt;Скопируем файлы yarn.lock и package.json в контейнер&lt;/li&gt;
+&lt;li&gt;Установим необходимые зависимости&lt;/li&gt;
+&lt;li&gt;Откроем порт 3000&lt;/li&gt;
+&lt;li&gt;Запускаем React-приложение после запуска контейнера&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Добавим в .dockerignore директории/файлы, которые не должны попасть в образ&lt;/h3&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;.git
+node_modules
+build&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Создание образа&lt;/h3&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;docker build -t dockerized-app &lt;span class=&quot;token keyword&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Запуск контейнера&lt;/h3&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;docker run -it -v &lt;span class=&quot;token variable&quot;&gt;${PWD}&lt;/span&gt;:/app -v /app/node_modules -p 3001:3000 -e CHOKIDAR_USEPOLLING&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;true dockerized-app&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Для Windows&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;docker run -it -v %cd%:/app -v /app/node_modules -p 3001:3000 -e CHOKIDAR_USEPOLLING&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;true dockerized-app&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;Давайте разберемся для чего и какие аргументы мы передаем&lt;/b&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;“-it” - интерактивный режим&lt;/li&gt;
+&lt;li&gt;“-v ${PWD}:/app” - монтируем текущую рабочую директорию в директорию /app docker-контейнера&lt;/li&gt;
+&lt;li&gt;“-v /app/node&lt;em&gt;modules” - используем node&lt;/em&gt;modules из контейнера&lt;/li&gt;
+&lt;li&gt;“-p” - сопоставляем порт docker-контейнера порту на хост системе&lt;/li&gt;
+&lt;li&gt;“-e CHOKIDAR_USEPOLLING=true” - устанавливаем переменную окружения для принудительного слежения webpack за нашим томом.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;b&gt;Осталось открыть приложение в браузере &lt;a href=&quot;http://localhost:3001/&quot;&gt;http://localhost:3001/&lt;/a&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Готово, теперь webpack отслеживает изменения файлов и изменив код в каком-либо файле мы сможем увидеть результат в браузере.&lt;/b&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Знакомство]]></title><description><![CDATA[Кто я такой ? Меня зовут Ренат и сейчас я живу в Челябинске. Я работаю в софтверной компании на позиции ведущего frontend-разработчика. Мне…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//about-me/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//about-me/</guid><pubDate>Thu, 18 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Кто я такой ?&lt;/h2&gt;
 &lt;p&gt;Меня зовут Ренат и сейчас я живу в Челябинске.&lt;br&gt;
 Я работаю в софтверной компании на позиции ведущего frontend-разработчика.&lt;br&gt;
 Мне нравится изучать новые технологии и расширять кругозор.&lt;br&gt;
