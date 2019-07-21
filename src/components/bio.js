@@ -54,11 +54,20 @@ const Bio = () => {
           borderRadius: `50%`,
         }}
       />
-      <p style={{
-        marginBottom: 0,
-      }}>
-        Автор: <strong>{author}</strong>
-      </p>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <p style={{
+          marginBottom: 0,
+        }}>
+          Автор: <strong>{author}</strong>
+        </p>
+        <p style={{
+          marginBottom: 0,
+        }}>
+          <a href={`https://twitter.com/${social.twitter}`} target="_blank" rel="nofollow noreferrer noopener">
+            Twitter
+          </a>
+        </p>
+      </div>
     </div>
   )
 }
