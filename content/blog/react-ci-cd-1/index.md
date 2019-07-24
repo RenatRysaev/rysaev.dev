@@ -42,7 +42,7 @@ cd dockerized-react
 ###Напишем наш Dockerfile для создания образа
 
 <b>Dockerfile</b>
-```
+```dockerfile
 # Берем node.js v8 в качестве родительского образа
 FROM node:8
 # Устанавливаем рабочую директорию

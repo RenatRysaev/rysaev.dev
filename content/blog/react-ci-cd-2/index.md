@@ -17,7 +17,7 @@ description: Готовим окружение для развертывания
 Затем создадим второй докерфайл, назвав его Dockerfile.prod, который мы будем использовать для продакшена.
 
 <b>Dockerfile.prod</b>
-```
+```dockerfile
 # Берем в качестве родительского образа node:8-apline и назовем эту ступень сборки "build-stage"
 FROM node:8-alpine as build-stage
 # Устанавливаем рабочую директорию
@@ -46,7 +46,7 @@ CMD ["nginx", "-g", "daemon off;"]
 ### Напишем конфиг для Nginx
 
 <b>nginx.conf</b>
-```
+```nginx
 # Автоматически определяем количество процессов
 worker_processes auto;
 events {
