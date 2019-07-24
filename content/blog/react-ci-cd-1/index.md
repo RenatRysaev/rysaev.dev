@@ -5,9 +5,9 @@ description: Готовим окружение для разработки React
 ---
 
 ##Я планирую серию статей, в которых постараюсь раскрыть следующие темы:
-1) <b>Docker для разработки React-приложения</b>
-2) <b>CI/CD с использованием Jenkins</b>
-3) <b>Nginx для раздачи статики</b>
+1) [<b>Docker для разработки React-приложения</b>](https://rysaev.dev/react-ci-cd-1/)
+2) [<b>Docker для развертывания React-приложения + Nginx для раздачи статики</b>](https://rysaev.dev/react-ci-cd-2/)
+3) <b>CI/CD с использованием Jenkins</b>
 
 ###Это первая часть, в которой мы разберемся с тем как настроить окружение для разработки с Docker + React
 
@@ -25,6 +25,8 @@ description: Готовим окружение для разработки React
 
 Поэтому я решил немного раскурить Docker и поделиться полезной информацией о том
 как его использовать для разработки и деплоя.  
+
+> [Репозиторий с итоговым кодом](https://github.com/RenatRysaev/dockerized-react/tree/react-ci-cd-1) для этой статьи
 
 <b>Предпологается что на вашей машине уже установлено:</b>
 1) [Docker](https://www.docker.com/) v18.09.2
@@ -67,13 +69,13 @@ build
 ### Создание образа
 
 ```bash
-docker build -t dockerized-app .
+docker build -t dockerized-app:dev .
 ```
 
 ### Запуск контейнера
 
 ```bash
-docker run -it -v ${PWD}:/app -v /app/node_modules -p 3001:3000 -e CHOKIDAR_USEPOLLING=true dockerized-app
+docker run -it -v ${PWD}:/app -v /app/node_modules -p 3001:3000 -e CHOKIDAR_USEPOLLING=true dockerized-app:dev
 ```
 
 Для Windows
@@ -90,6 +92,8 @@ docker run -it -v %cd%:/app -v /app/node_modules -p 3001:3000 -e CHOKIDAR_USEPOL
 4) "-p" - сопоставляем порт docker-контейнера порту на хост системе
 5) "-e CHOKIDAR_USEPOLLING=true" - устанавливаем переменную окружения для принудительного слежения webpack за нашим томом.
 
-<b>Осталось открыть приложение в браузере [http://localhost:3001/](http://localhost:3001/)</b>
+Осталось открыть приложение в браузере [http://localhost:3001/](http://localhost:3001/)
 
-<b>Готово, теперь webpack отслеживает изменения файлов и изменив код в каком-либо файле мы сможем увидеть результат в браузере.</b>
+Готово, теперь webpack отслеживает изменения файлов и изменив код в каком-либо файле мы сможем увидеть результат в браузере.
+
+<b>В следующей статье мы будем разбираться с тем подготовить окружение для развертывания Docker + React</b>

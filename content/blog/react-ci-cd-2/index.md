@@ -11,6 +11,8 @@ description: Готовим окружение для развертывания
 
 <b>Сегодня мы напишем второй Dockerfile для деплоя + настроим Nginx для раздачи статики.</b>
 
+> [Репозиторий с итоговым кодом](https://github.com/RenatRysaev/dockerized-react/tree/react-ci-cd-2) для этой статьи
+
 Первым делом давайте переименуем уже существующий Dockerfile -> Dockerfile.dev.  
 Затем создадим второй докерфайл, назвав его Dockerfile.prod, который мы будем использовать для продакшена.
 
@@ -71,10 +73,10 @@ http {
         listen 80;
         # Директория из которой раздаем статику
         root /usr/share/nginx/html; 
-    }
-    # Сначала пытаемся обработать запрос как к файлу или директории
-    location / {
-        try_files $uri $uri/ /index.html;
+        # Сначала пытаемся обработать запрос как к файлу или директории
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
     }
 }
 ```
@@ -84,18 +86,18 @@ http {
 Для того, чтобы собрать образ выполните:
 
 ```bash
-docker build -t dockerized-app -f Dockerfile.prod .
+docker build -t dockerized-react:prod -f Dockerfile.prod .
 ```
 
 Для того, чтобы запустить контейнер и убедиться в том, что Nginx раздает статику выполните:
 
 ```bash
-docker run -it -p 80:80 dockerized-app
+docker run -it -p 80:80 dockerized-react:prod
 ```
 
 Откройте [localhost](http://localhost/)
 
 Готово, теперь мы имеем контейнер с Nginx, который умеет раздавать сборку нашего приложения.
 
-<b>В следующей статье мы будем разбираться с тем как с помощью Jenkins развернуть наш Docker-контейнер
+<b>В следующей статье мы будем разбираться с тем как с помощью Jenkins развернуть Docker-контейнер
 на удаленном сервере.</b>
