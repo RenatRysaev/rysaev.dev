@@ -2,6 +2,9 @@
 <p><b>В <a href="http://localhost:8000/react-ci-cd-1/">прошлой части</a> мы настраивали окружение для
 разработки нашего приложения, пришло время подготовить окружения для деплоя.</b></p>
 <p><b>Сегодня мы напишем второй Dockerfile для деплоя + настроим Nginx для раздачи статики.</b></p>
+<blockquote>
+<p><a href="https://github.com/RenatRysaev/dockerized-react/tree/react-ci-cd-2">Репозиторий с итоговым кодом</a> для этой статьи</p>
+</blockquote>
 <p>Первым делом давайте переименуем уже существующий Dockerfile -> Dockerfile.dev.<br>
 Затем создадим второй докерфайл, назвав его Dockerfile.prod, который мы будем использовать для продакшена.</p>
 <p><b>Dockerfile.prod</b></p>
@@ -56,20 +59,20 @@ http {
         listen 80;
         # Директория из которой раздаем статику
         root /usr/share/nginx/html; 
-    }
-    # Сначала пытаемся обработать запрос как к файлу или директории
-    location / {
-        try_files $uri $uri/ /index.html;
+        # Сначала пытаемся обработать запрос как к файлу или директории
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
     }
 }</code></pre></div>
 <h3>Собираем образ и запускаем контейнер</h3>
 <p>Для того, чтобы собрать образ выполните:</p>
-<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">docker build -t dockerized-app -f Dockerfile.prod <span class="token keyword">.</span></code></pre></div>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">docker build -t dockerized-react:prod -f Dockerfile.prod <span class="token keyword">.</span></code></pre></div>
 <p>Для того, чтобы запустить контейнер и убедиться в том, что Nginx раздает статику выполните:</p>
-<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">docker run -it -p 80:80 dockerized-app</code></pre></div>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">docker run -it -p 80:80 dockerized-react:prod</code></pre></div>
 <p>Откройте <a href="http://localhost/">localhost</a></p>
 <p>Готово, теперь мы имеем контейнер с Nginx, который умеет раздавать сборку нашего приложения.</p>
-<p><b>В следующей статье мы будем разбираться с тем как с помощью Jenkins развернуть наш Docker-контейнер
+<p><b>В следующей статье мы будем разбираться с тем как с помощью Jenkins развернуть Docker-контейнер
 на удаленном сервере.</b></p></div><hr style="margin-bottom:1.75rem"/><div style="display:flex;align-items:center;margin-bottom:4.375rem"><div class=" gatsby-image-wrapper" style="position:relative;overflow:hidden;display:inline-block;width:50px;height:50px;margin-right:0.875rem;margin-bottom:0;min-width:50px;border-radius:100%"><img src="data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAbABQDASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAAUBAwQC/8QAFgEBAQEAAAAAAAAAAAAAAAAAAQAC/9oADAMBAAIQAxAAAAF8t1KBfiIiMdPOjSVCf//EABwQAAICAwEBAAAAAAAAAAAAAAABAgMEERIhQf/aAAgBAQABBQJvlRypOW0TfePHY7B38VxsR4fBH//EABcRAQEBAQAAAAAAAAAAAAAAAAEAEBH/2gAIAQMBAT8BDBu3/8QAGBEAAgMAAAAAAAAAAAAAAAAAABIBEBH/2gAIAQIBAT8B2lFg/8QAIBAAAgAEBwAAAAAAAAAAAAAAAAECEBExAxIgISIyYf/aAAgBAQAGPwKrN8PiXG/DvLLC6yvo/8QAHhAAAgICAgMAAAAAAAAAAAAAAAERITFREGFBgZH/2gAIAQEAAT8hW3EjATabR1BiDLkM1Zp6LPH0ZLOwtMqPVkMuRqP/2gAMAwEAAgADAAAAEBQyvv/EABYRAQEBAAAAAAAAAAAAAAAAAAARAf/aAAgBAwEBPxCiNcU//8QAFxEBAQEBAAAAAAAAAAAAAAAAAQAREP/aAAgBAgEBPxBxbIeH/8QAHhABAAMAAgMBAQAAAAAAAAAAAQARIUFRMYHBYbH/2gAIAQEAAT8QayjtqPRLdFg7/ZgchfmMGHoK35KAciGUlm7HgWmTdT1WFcneykskxP6ePcCHpy18lrqAdROU/9k=" alt="Ренат Рысаев" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:1;transition-delay:500ms;border-radius:50%"/><noscript><picture><source srcset="/static/9f0fd9e959132142a1df33ebcc25e2c4/9b664/author.jpg 1x,
 /static/9f0fd9e959132142a1df33ebcc25e2c4/06a10/author.jpg 1.5x,
 /static/9f0fd9e959132142a1df33ebcc25e2c4/f1b5a/author.jpg 2x" /><img loading="lazy" width="50" height="50" srcset="/static/9f0fd9e959132142a1df33ebcc25e2c4/9b664/author.jpg 1x,
