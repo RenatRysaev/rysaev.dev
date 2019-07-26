@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Персональный блог. Автор Ренат Рысаев. JavaScript, TypeScript, React.js, Node.js, Webpack, CI/CD]]></description><link>https://rysaev.dev</link><generator>RSS for Node</generator><lastBuildDate>Wed, 24 Jul 2019 11:33:30 GMT</lastBuildDate><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 2.]]></title><description><![CDATA[Это вторая часть, в которой мы разберемся с тем как подготовить окружение для развертывания Docker + React В прошлой части мы настраивали…]]></description><link>https://rysaev.dev/react-ci-cd-2/</link><guid isPermaLink="false">https://rysaev.dev/react-ci-cd-2/</guid><pubDate>Mon, 22 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;Это вторая часть, в которой мы разберемся с тем как подготовить окружение для развертывания Docker + React&lt;/h3&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Персональный блог. Автор Ренат Рысаев. JavaScript, TypeScript, React.js, Node.js, Webpack, CI/CD]]></description><link>https://rysaev.dev</link><generator>RSS for Node</generator><lastBuildDate>Fri, 26 Jul 2019 16:19:36 GMT</lastBuildDate><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 2.]]></title><description><![CDATA[Это вторая часть, в которой мы разберемся с тем как подготовить окружение для развертывания Docker + React В прошлой части мы настраивали…]]></description><link>https://rysaev.dev/react-ci-cd-2/</link><guid isPermaLink="false">https://rysaev.dev/react-ci-cd-2/</guid><pubDate>Mon, 22 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;Это вторая часть, в которой мы разберемся с тем как подготовить окружение для развертывания Docker + React&lt;/h3&gt;
 &lt;p&gt;&lt;b&gt;В &lt;a href=&quot;http://localhost:8000/react-ci-cd-1/&quot;&gt;прошлой части&lt;/a&gt; мы настраивали окружение для
 разработки нашего приложения, пришло время подготовить окружения для деплоя.&lt;/b&gt;&lt;/p&gt;
 &lt;p&gt;&lt;b&gt;Сегодня мы напишем второй Dockerfile для деплоя + настроим Nginx для раздачи статики.&lt;/b&gt;&lt;/p&gt;
@@ -8,63 +8,63 @@
 &lt;p&gt;Первым делом давайте переименуем уже существующий Dockerfile -&gt; Dockerfile.dev.&lt;br&gt;
 Затем создадим второй докерфайл, назвав его Dockerfile.prod, который мы будем использовать для продакшена.&lt;/p&gt;
 &lt;p&gt;&lt;b&gt;Dockerfile.prod&lt;/b&gt;&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# Берем в качестве родительского образа node:8-apline и назовем эту ступень сборки &amp;quot;build-stage&amp;quot;
-FROM node:8-alpine as build-stage
-# Устанавливаем рабочую директорию
-WORKDIR /app
-# Копируем файлы package.json yarn.lock в рабочую директорию
-COPY package.json yarn.lock /app/
-# Устаналиваем зависимости
-RUN yarn install
-# Копируем исходники в рабочую директорию
-COPY . /app/
-# Собираем проект
-RUN yarn build
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dockerfile&quot;&gt;&lt;pre class=&quot;language-dockerfile&quot;&gt;&lt;code class=&quot;language-dockerfile&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# Берем в качестве родительского образа node:8-apline и назовем эту ступень сборки &lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;build-stage&quot;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;FROM&lt;/span&gt; node&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;8&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;alpine as build&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;stage
+&lt;span class=&quot;token comment&quot;&gt;# Устанавливаем рабочую директорию&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;WORKDIR&lt;/span&gt; /app
+&lt;span class=&quot;token comment&quot;&gt;# Копируем файлы package.json yarn.lock в рабочую директорию&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;COPY&lt;/span&gt; package.json yarn.lock /app/
+&lt;span class=&quot;token comment&quot;&gt;# Устаналиваем зависимости&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;RUN&lt;/span&gt; yarn install
+&lt;span class=&quot;token comment&quot;&gt;# Копируем исходники в рабочую директорию&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;COPY&lt;/span&gt; . /app/
+&lt;span class=&quot;token comment&quot;&gt;# Собираем проект&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;RUN&lt;/span&gt; yarn build
 
-# Вторая ступень сборки, поднимем nginx для раздачи статики
-FROM nginx:stable-alpine
-# Копируем билд из ступени сборки &amp;quot;build-stage&amp;quot; в директорию образа /usr/share/nginx/html
-COPY --from=build-stage /app/build /usr/share/nginx/html
-# Копируем конфиг nginx в директорию образа /etc/nginx/nginx.conf (Напишем его позже)
-COPY nginx.conf /etc/nginx/nginx.conf
-# Открываем 80 порт
-EXPOSE 80
-# Указываем команду, поднимающую nginx при запуске контейнера
-CMD [&amp;quot;nginx&amp;quot;, &amp;quot;-g&amp;quot;, &amp;quot;daemon off;&amp;quot;]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;token comment&quot;&gt;# Вторая ступень сборки, поднимем nginx для раздачи статики&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;FROM&lt;/span&gt; nginx&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;stable&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;alpine
+&lt;span class=&quot;token comment&quot;&gt;# Копируем билд из ступени сборки &lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;build-stage&quot;&lt;/span&gt; в директорию образа /usr/share/nginx/html
+&lt;span class=&quot;token keyword&quot;&gt;COPY&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;from=build&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;stage /app/build /usr/share/nginx/html
+&lt;span class=&quot;token comment&quot;&gt;# Копируем конфиг nginx в директорию образа /etc/nginx/nginx.conf (Напишем его позже)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;COPY&lt;/span&gt; nginx.conf /etc/nginx/nginx.conf
+&lt;span class=&quot;token comment&quot;&gt;# Открываем 80 порт&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;EXPOSE&lt;/span&gt; 80
+&lt;span class=&quot;token comment&quot;&gt;# Указываем команду, поднимающую nginx при запуске контейнера&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;CMD&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nginx&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;-g&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;daemon off;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;Напишем конфиг для Nginx&lt;/h3&gt;
 &lt;p&gt;&lt;b&gt;nginx.conf&lt;/b&gt;&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# Автоматически определяем количество процессов
-worker_processes auto;
-events {
-    # Устанавливаем максимальное кол-во соединений для одного рабочего процесса
-    worker_connections 8000;
-    # Указывем nginx, чтобы он пытался принять максимльное кол-во подключений
-    multi_accept on;
-}
-http {
-    # Указываем корректные заголовки для всех типов расширений
-    include mime.types;
-    default_type application/octet-stream;
-    # Увеличиваем производительность
-    sendfile on;
-    # Сжимаем данные
-    gzip on;
-    gzip_comp_level 6;
-    gzip_min_length 100;
-    gzip_http_version 1.1;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-    server {
-        index index.html index.htm;
-        # Слушаем 80 порт
-        listen 80;
-        # Директория из которой раздаем статику
-        root /usr/share/nginx/html; 
-        # Сначала пытаемся обработать запрос как к файлу или директории
-        location / {
-            try_files $uri $uri/ /index.html;
-        }
-    }
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;nginx&quot;&gt;&lt;pre class=&quot;language-nginx&quot;&gt;&lt;code class=&quot;language-nginx&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# Автоматически определяем количество процессов&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;worker_processes&lt;/span&gt; auto&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;events&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# Устанавливаем максимальное кол-во соединений для одного рабочего процесса&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;worker_connections&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;8000&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# Указывем nginx, чтобы он пытался принять максимльное кол-во подключений&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;multi_accept&lt;/span&gt; on&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;http&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# Указываем корректные заголовки для всех типов расширений&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;include&lt;/span&gt; mime&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;types&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;default_type&lt;/span&gt; application&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;octet&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;stream&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# Увеличиваем производительность&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;sendfile&lt;/span&gt; on&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# Сжимаем данные&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;gzip&lt;/span&gt; on&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;gzip_comp_level&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;gzip_min_length&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;gzip_http_version&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1.1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;gzip_types&lt;/span&gt; text&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;plain text&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;css application&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;json application&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;javascript text&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;xml application&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;xml application&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;xml&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;rss text&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;javascript&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;html &lt;span class=&quot;token keyword&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;htm&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;# Слушаем 80 порт&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;# Директория из которой раздаем статику&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;usr&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;share&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;nginx&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;html&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; 
+        &lt;span class=&quot;token comment&quot;&gt;# Сначала пытаемся обработать запрос как к файлу или директории&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;token keyword&quot;&gt;try_files&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$uri&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$uri&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;html&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;Собираем образ и запускаем контейнер&lt;/h3&gt;
 &lt;p&gt;Для того, чтобы собрать образ выполните:&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;docker build -t dockerized-react:prod -f Dockerfile.prod &lt;span class=&quot;token keyword&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -106,18 +106,18 @@ http {
 &lt;span class=&quot;token function&quot;&gt;cd&lt;/span&gt; dockerized-react&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;Напишем наш Dockerfile для создания образа&lt;/h3&gt;
 &lt;p&gt;&lt;b&gt;Dockerfile&lt;/b&gt;&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# Берем node.js v8 в качестве родительского образа
-FROM node:8
-# Устанавливаем рабочую директорию
-WORKDIR /app
-# Копируем файлы yarn.lock и package.json в рабочую директорию
-COPY package.json yarn.lock /app/
-# Устанавливаем зависимости
-RUN yarn install
-# Открываем порт 3000
-EXPOSE 3000
-# Запускаем React-приложение после запуска контейнера
-CMD [&amp;quot;yarn&amp;quot;, &amp;quot;start&amp;quot;]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dockerfile&quot;&gt;&lt;pre class=&quot;language-dockerfile&quot;&gt;&lt;code class=&quot;language-dockerfile&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# Берем node.js v8 в качестве родительского образа&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;FROM&lt;/span&gt; node&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;8
+&lt;span class=&quot;token comment&quot;&gt;# Устанавливаем рабочую директорию&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;WORKDIR&lt;/span&gt; /app
+&lt;span class=&quot;token comment&quot;&gt;# Копируем файлы yarn.lock и package.json в рабочую директорию&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;COPY&lt;/span&gt; package.json yarn.lock /app/
+&lt;span class=&quot;token comment&quot;&gt;# Устанавливаем зависимости&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;RUN&lt;/span&gt; yarn install
+&lt;span class=&quot;token comment&quot;&gt;# Открываем порт 3000&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;EXPOSE&lt;/span&gt; 3000
+&lt;span class=&quot;token comment&quot;&gt;# Запускаем React-приложение после запуска контейнера&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;CMD&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;yarn&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;start&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;Добавим в .dockerignore директории/файлы, которые не должны попасть в образ&lt;/h3&gt;
 &lt;p&gt;&lt;b&gt;.dockerignore&lt;/b&gt;&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;.git
