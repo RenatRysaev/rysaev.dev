@@ -1,6 +1,7 @@
 import Typography from "typography"
 import Wordpress2016 from "typography-theme-wordpress-2016"
-import './global.css'
+import 'prismjs/themes/prism-tomorrow.css'
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
 
 Wordpress2016.overrideThemeStyles = () => {
   return {
