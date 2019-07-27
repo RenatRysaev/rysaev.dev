@@ -2,7 +2,7 @@ module.exports = {
   siteMetadata: {
     title: `Блог о веб-разработке`,
     author: `Ренат Рысаев`,
-    description: `Персональный блог. Автор Ренат Рысаев. JavaScript, TypeScript, React.js, Node.js, Webpack, CI/CD`,
+    description: `Персональный блог Рената Рысаева. Я пишу о JavaScript, TypeScript, React.js, Node.js, Webpack, CI/CD.`,
     siteUrl: `https://rysaev.dev`,
     social: {
       twitter: `renat_rysaev`,

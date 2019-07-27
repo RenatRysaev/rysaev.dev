@@ -58,14 +58,12 @@ const Bio = () => {
         <p style={{
           marginBottom: 0,
         }}>
-          Автор: <strong>{author}</strong>
+          Персональный блог <a href={`https://www.linkedin.com/in/renat-dev`} target="_blank" rel="nofollow noreferrer noopener">Рената Рысаева</a>
         </p>
         <p style={{
           marginBottom: 0,
         }}>
-          <a href={`https://twitter.com/${social.twitter}`} target="_blank" rel="nofollow noreferrer noopener">
-            Twitter
-          </a>
+          Я пишу о интересных мне технологиях в веб-разработке
         </p>
       </div>
     </div>
