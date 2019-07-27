@@ -86,6 +86,14 @@ class Layout extends React.Component {
           >
             github
           </a>
+          <a
+            href="/rss.xml"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ float: 'right' }}
+          >
+            rss
+          </a>
         </footer>
       </div>
     )
