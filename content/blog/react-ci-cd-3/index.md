@@ -16,6 +16,15 @@ description: Поднимаем Jenkins и настраиваем CI при пу
 В <b>[прошлой части](https://rysaev.dev/react-ci-cd-2/)</b> мы написали два Dockerfile для CI/CD.
 Сегодня мы рассмотрим как можно организовать простейший CI для нашего React-приложения. 
 
+Препологается, что у вас уже есть vps сервер с установленным linux и статическим ip(либо доменом).  
+В качестве ОС я использовал ubuntu 18.04  
+Ниже представлен список статей, с помощью которых я осуществил первоначальную настройку
+и установил Jenkins на мой сервер.
+
+1) [Первоначальная настройка ubuntu (RU)](https://www.digitalocean.com/community/tutorials/ubuntu-18-04-ru)
+2) [Установка Jenkins (EN)](https://linuxize.com/post/how-to-install-jenkins-on-ubuntu-18-04/)
+3) [Установка Docker (RU)](https://www.digitalocean.com/community/tutorials/docker-ubuntu-18-04-1-ru)
+
 ###Введение 
 Для начала давайте разберемся, как будет построен процесс.  
 
