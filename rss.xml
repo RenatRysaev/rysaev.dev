@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Персональный блог Рената Рысаева. Я пишу о JavaScript, TypeScript, React.js, Node.js, Webpack, CI/CD.]]></description><link>https://rysaev.dev</link><generator>RSS for Node</generator><lastBuildDate>Wed, 31 Jul 2019 23:04:59 GMT</lastBuildDate><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 3.]]></title><description><![CDATA[Это третья часть, в которой мы постараемся разобраться с тем, как сделать простейший CI с помощью Jenkins. В прошлой части мы написали два…]]></description><link>https://rysaev.dev/react-ci-cd-3/</link><guid isPermaLink="false">https://rysaev.dev/react-ci-cd-3/</guid><pubDate>Sun, 28 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;Это третья часть, в которой мы постараемся разобраться с тем, как сделать простейший CI с помощью Jenkins.&lt;/h3&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Персональный блог Рената Рысаева. Я пишу о JavaScript, TypeScript, React.js, Node.js, Webpack, CI/CD.]]></description><link>https://rysaev.dev</link><generator>RSS for Node</generator><lastBuildDate>Wed, 31 Jul 2019 23:08:14 GMT</lastBuildDate><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 3.]]></title><description><![CDATA[Это третья часть, в которой мы постараемся разобраться с тем, как сделать простейший CI с помощью Jenkins. В прошлой части мы написали два…]]></description><link>https://rysaev.dev/react-ci-cd-3/</link><guid isPermaLink="false">https://rysaev.dev/react-ci-cd-3/</guid><pubDate>Sun, 28 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;Это третья часть, в которой мы постараемся разобраться с тем, как сделать простейший CI с помощью Jenkins.&lt;/h3&gt;
 &lt;p&gt;В &lt;b&gt;&lt;a href=&quot;https://rysaev.dev/react-ci-cd-2/&quot;&gt;прошлой части&lt;/a&gt;&lt;/b&gt; мы написали два Dockerfile для CI/CD.
 Сегодня мы рассмотрим как можно организовать простейший CI для нашего React-приложения.  &lt;/p&gt;
 &lt;blockquote&gt;
@@ -166,7 +166,7 @@
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
-    href=&quot;/static/fb0889701c375851e7c5803f0428fe29/ef8bc/step-1.png&quot;
+    href=&quot;/static/fb0889701c375851e7c5803f0428fe29/ef8bc/add-job-1.png&quot;
     style=&quot;display: block&quot;
     target=&quot;_blank&quot;
     rel=&quot;noopener&quot;
@@ -179,10 +179,10 @@
         class=&quot;gatsby-resp-image-image&quot;
         alt=&quot;Создаем задачу&quot;
         title=&quot;Создаем задачу&quot;
-        src=&quot;/static/fb0889701c375851e7c5803f0428fe29/ef8bc/step-1.png&quot;
-        srcset=&quot;/static/fb0889701c375851e7c5803f0428fe29/cf440/step-1.png 148w,
-/static/fb0889701c375851e7c5803f0428fe29/d2d38/step-1.png 295w,
-/static/fb0889701c375851e7c5803f0428fe29/ef8bc/step-1.png 534w&quot;
+        src=&quot;/static/fb0889701c375851e7c5803f0428fe29/ef8bc/add-job-1.png&quot;
+        srcset=&quot;/static/fb0889701c375851e7c5803f0428fe29/cf440/add-job-1.png 148w,
+/static/fb0889701c375851e7c5803f0428fe29/d2d38/add-job-1.png 295w,
+/static/fb0889701c375851e7c5803f0428fe29/ef8bc/add-job-1.png 534w&quot;
         sizes=&quot;(max-width: 534px) 100vw, 534px&quot;
       /&gt;
   &lt;/a&gt;
@@ -194,7 +194,7 @@
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
-    href=&quot;/static/964d9b1fc9f55aa9ec59de74c76cd321/ddc13/step-2.png&quot;
+    href=&quot;/static/964d9b1fc9f55aa9ec59de74c76cd321/ddc13/add-job-2.png&quot;
     style=&quot;display: block&quot;
     target=&quot;_blank&quot;
     rel=&quot;noopener&quot;
@@ -207,12 +207,12 @@
         class=&quot;gatsby-resp-image-image&quot;
         alt=&quot;Задаем имя и тип задачи&quot;
         title=&quot;Задаем имя и тип задачи&quot;
-        src=&quot;/static/964d9b1fc9f55aa9ec59de74c76cd321/b9e4f/step-2.png&quot;
-        srcset=&quot;/static/964d9b1fc9f55aa9ec59de74c76cd321/cf440/step-2.png 148w,
-/static/964d9b1fc9f55aa9ec59de74c76cd321/d2d38/step-2.png 295w,
-/static/964d9b1fc9f55aa9ec59de74c76cd321/b9e4f/step-2.png 590w,
-/static/964d9b1fc9f55aa9ec59de74c76cd321/f9b6a/step-2.png 885w,
-/static/964d9b1fc9f55aa9ec59de74c76cd321/ddc13/step-2.png 1013w&quot;
+        src=&quot;/static/964d9b1fc9f55aa9ec59de74c76cd321/b9e4f/add-job-2.png&quot;
+        srcset=&quot;/static/964d9b1fc9f55aa9ec59de74c76cd321/cf440/add-job-2.png 148w,
+/static/964d9b1fc9f55aa9ec59de74c76cd321/d2d38/add-job-2.png 295w,
+/static/964d9b1fc9f55aa9ec59de74c76cd321/b9e4f/add-job-2.png 590w,
+/static/964d9b1fc9f55aa9ec59de74c76cd321/f9b6a/add-job-2.png 885w,
+/static/964d9b1fc9f55aa9ec59de74c76cd321/ddc13/add-job-2.png 1013w&quot;
         sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
       /&gt;
   &lt;/a&gt;
@@ -224,7 +224,7 @@
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
-    href=&quot;/static/ba49aed4fe92dbb8088e6070147d704e/dae74/step-3.png&quot;
+    href=&quot;/static/ba49aed4fe92dbb8088e6070147d704e/dae74/add-job-3.png&quot;
     style=&quot;display: block&quot;
     target=&quot;_blank&quot;
     rel=&quot;noopener&quot;
@@ -237,11 +237,11 @@
         class=&quot;gatsby-resp-image-image&quot;
         alt=&quot;Указываем, что триггером запуска задачи будет событие пуша в репозиторий&quot;
         title=&quot;Указываем, что триггером запуска задачи будет событие пуша в репозиторий&quot;
-        src=&quot;/static/ba49aed4fe92dbb8088e6070147d704e/b9e4f/step-3.png&quot;
-        srcset=&quot;/static/ba49aed4fe92dbb8088e6070147d704e/cf440/step-3.png 148w,
-/static/ba49aed4fe92dbb8088e6070147d704e/d2d38/step-3.png 295w,
-/static/ba49aed4fe92dbb8088e6070147d704e/b9e4f/step-3.png 590w,
-/static/ba49aed4fe92dbb8088e6070147d704e/dae74/step-3.png 804w&quot;
+        src=&quot;/static/ba49aed4fe92dbb8088e6070147d704e/b9e4f/add-job-3.png&quot;
+        srcset=&quot;/static/ba49aed4fe92dbb8088e6070147d704e/cf440/add-job-3.png 148w,
+/static/ba49aed4fe92dbb8088e6070147d704e/d2d38/add-job-3.png 295w,
+/static/ba49aed4fe92dbb8088e6070147d704e/b9e4f/add-job-3.png 590w,
+/static/ba49aed4fe92dbb8088e6070147d704e/dae74/add-job-3.png 804w&quot;
         sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
       /&gt;
   &lt;/a&gt;
@@ -253,7 +253,7 @@
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
-    href=&quot;/static/1af7860cad2ab99678fe11528322549b/1894d/step-4.png&quot;
+    href=&quot;/static/1af7860cad2ab99678fe11528322549b/1894d/add-job-4.png&quot;
     style=&quot;display: block&quot;
     target=&quot;_blank&quot;
     rel=&quot;noopener&quot;
@@ -266,13 +266,13 @@
         class=&quot;gatsby-resp-image-image&quot;
         alt=&quot;Указываем откуда брать pipeline&quot;
         title=&quot;Указываем откуда брать pipeline&quot;
-        src=&quot;/static/1af7860cad2ab99678fe11528322549b/b9e4f/step-4.png&quot;
-        srcset=&quot;/static/1af7860cad2ab99678fe11528322549b/cf440/step-4.png 148w,
-/static/1af7860cad2ab99678fe11528322549b/d2d38/step-4.png 295w,
-/static/1af7860cad2ab99678fe11528322549b/b9e4f/step-4.png 590w,
-/static/1af7860cad2ab99678fe11528322549b/f9b6a/step-4.png 885w,
-/static/1af7860cad2ab99678fe11528322549b/2d849/step-4.png 1180w,
-/static/1af7860cad2ab99678fe11528322549b/1894d/step-4.png 1427w&quot;
+        src=&quot;/static/1af7860cad2ab99678fe11528322549b/b9e4f/add-job-4.png&quot;
+        srcset=&quot;/static/1af7860cad2ab99678fe11528322549b/cf440/add-job-4.png 148w,
+/static/1af7860cad2ab99678fe11528322549b/d2d38/add-job-4.png 295w,
+/static/1af7860cad2ab99678fe11528322549b/b9e4f/add-job-4.png 590w,
+/static/1af7860cad2ab99678fe11528322549b/f9b6a/add-job-4.png 885w,
+/static/1af7860cad2ab99678fe11528322549b/2d849/add-job-4.png 1180w,
+/static/1af7860cad2ab99678fe11528322549b/1894d/add-job-4.png 1427w&quot;
         sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
       /&gt;
   &lt;/a&gt;
