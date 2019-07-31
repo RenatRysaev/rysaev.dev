@@ -114,7 +114,7 @@ pipeline {
 ![Ручной запуск CI](./manual-run-ci.png)
 
 <b>Если вы столкнулись с ошибкой "sudo: no tty present and no askpass program specified",
-то вам нужно сделать следующее:</b>
+то вам нужно на вашем сервере с Jenkins в терминале выполнить следующую команду:</b>
 
 ```bash
 sudo visudo
