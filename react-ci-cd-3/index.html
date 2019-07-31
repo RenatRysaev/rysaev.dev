@@ -336,7 +336,7 @@
   </a>
     </span></p>
 <p><b>Если вы столкнулись с ошибкой “sudo: no tty present and no askpass program specified”,
-то вам нужно сделать следующее:</b></p>
+то вам нужно на вашем сервере с Jenkins в терминале выполнить следующую команду:</b></p>
 <div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash"><span class="token function">sudo</span> visudo</code></pre></div>
 <p>А затем добавить в файле в секцию ”# Allow members of group sudo to execute any command” следующее:</p>
 <div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">jenkins ALL=(ALL) NOPASSWD: ALL</code></pre></div>
