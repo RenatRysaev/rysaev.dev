@@ -1,4 +1,382 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Персональный блог Рената Рысаева. Я пишу о JavaScript, TypeScript, React.js, Node.js, Webpack, CI/CD.]]></description><link>https://rysaev.dev</link><generator>RSS for Node</generator><lastBuildDate>Mon, 29 Jul 2019 20:22:41 GMT</lastBuildDate><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 2.]]></title><description><![CDATA[Это вторая часть, в которой мы разберемся с тем как подготовить Docker-образ с React-приложением для тестирования и развертывания на…]]></description><link>https://rysaev.dev/react-ci-cd-2/</link><guid isPermaLink="false">https://rysaev.dev/react-ci-cd-2/</guid><pubDate>Mon, 22 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;Это вторая часть, в которой мы разберемся с тем как подготовить Docker-образ с React-приложением для тестирования и развертывания на удаленном сервере&lt;/h3&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Блог о веб-разработке]]></title><description><![CDATA[Персональный блог Рената Рысаева. Я пишу о JavaScript, TypeScript, React.js, Node.js, Webpack, CI/CD.]]></description><link>https://rysaev.dev</link><generator>RSS for Node</generator><lastBuildDate>Wed, 31 Jul 2019 23:04:59 GMT</lastBuildDate><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 3.]]></title><description><![CDATA[Это третья часть, в которой мы постараемся разобраться с тем, как сделать простейший CI с помощью Jenkins. В прошлой части мы написали два…]]></description><link>https://rysaev.dev/react-ci-cd-3/</link><guid isPermaLink="false">https://rysaev.dev/react-ci-cd-3/</guid><pubDate>Sun, 28 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;Это третья часть, в которой мы постараемся разобраться с тем, как сделать простейший CI с помощью Jenkins.&lt;/h3&gt;
+&lt;p&gt;В &lt;b&gt;&lt;a href=&quot;https://rysaev.dev/react-ci-cd-2/&quot;&gt;прошлой части&lt;/a&gt;&lt;/b&gt; мы написали два Dockerfile для CI/CD.
+Сегодня мы рассмотрим как можно организовать простейший CI для нашего React-приложения.  &lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/RenatRysaev/dockerized-react/tree/react-ci-cd-3&quot;&gt;Репозиторий с итоговым кодом&lt;/a&gt; для этой статьи&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Препологается, что у вас уже есть vps сервер с установленным linux и статическим ip(либо доменом),
+а так же доступ по ssh.&lt;br&gt;
+В качестве ОС я использовал ubuntu 18.04&lt;br&gt;
+Ниже представлен список статей, с помощью которых я осуществил первоначальную настройку
+и установил Jenkins на мой сервер.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.digitalocean.com/community/tutorials/ubuntu-18-04-ru&quot;&gt;Первоначальная настройка ubuntu (RU)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://linuxize.com/post/how-to-install-jenkins-on-ubuntu-18-04/&quot;&gt;Установка Jenkins (EN)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.digitalocean.com/community/tutorials/docker-ubuntu-18-04-1-ru&quot;&gt;Установка Docker (RU)&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Введение&lt;/h3&gt;
+&lt;p&gt;Для начала давайте разберемся, как будет построен процесс.  &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Пушим коммит в репозиторий.&lt;/li&gt;
+&lt;li&gt;С помощью webhooks github будет оповещать Jenkins о том, что произошел пуш.&lt;/li&gt;
+&lt;li&gt;Jenkins запускает Job, который подписан на это событие.&lt;/li&gt;
+&lt;li&gt;Job запускает jenkins-pipeline, который собирает образ и при сборке запускает тесты.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Давайте попробуем визуализировать все этапы этого процесса.&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/d25e2a2ee58eccb8a5df220c41bc6164/a0105/react-ci.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 21.535181236673775%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAECAYAAACOXx+WAAAACXBIWXMAAAsSAAALEgHS3X78AAAApklEQVQY01VOSQ7CMAzM/7+FxBnSAxIfqMqhTdJmX4bYXQSWRnZmsSNA1Rq34Bxjp9pfp6o5oaSI3yK91IraOzkFE6WwKKXEMMg93E3XokN/Px+Q9xvPZ8aEiNdHYcxArg0ipYRt22CthfMB1nkYraGUgveeQbrunDYG87wgxtj9jjWzrhiniUG8yDlfwdSJ3Wx5STze51I6Tn7iQggXdD+u1MK//gKI8TcWHWcx4QAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;ci-with-docker-jenkins-and-react&quot;
+        title=&quot;ci-with-docker-jenkins-and-react&quot;
+        src=&quot;/static/d25e2a2ee58eccb8a5df220c41bc6164/b9e4f/react-ci.png&quot;
+        srcset=&quot;/static/d25e2a2ee58eccb8a5df220c41bc6164/cf440/react-ci.png 148w,
+/static/d25e2a2ee58eccb8a5df220c41bc6164/d2d38/react-ci.png 295w,
+/static/d25e2a2ee58eccb8a5df220c41bc6164/b9e4f/react-ci.png 590w,
+/static/d25e2a2ee58eccb8a5df220c41bc6164/f9b6a/react-ci.png 885w,
+/static/d25e2a2ee58eccb8a5df220c41bc6164/2d849/react-ci.png 1180w,
+/static/d25e2a2ee58eccb8a5df220c41bc6164/a0105/react-ci.png 1407w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h3&gt;Давайте сделаем так, чтобы github оповещал Jenkins при событии пуша&lt;/h3&gt;
+&lt;p&gt;&lt;b&gt;Чтобы добавить webhook перейдите в репозиторий -&gt; settings -&gt; webhooks&lt;/b&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/dadd381eb434893be471042c298e199b/40920/add-webhook-1.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 35.58981233243968%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAACXBIWXMAAAsSAAALEgHS3X78AAAA+UlEQVQoz51Q2W7EIBDL///mapMoGyDAkHAN7sAeah/60I5kDHMYzJRywWYj1iMJJ9zUcx9TQS71B0plnFfE9tgRyENpAzovHI5wxTR6pr74IEl/QluC8Rf2ozdkeApSOxFkiIQ7HEmfVlDLDeQd0vdLqwi21mAoI+YKlgTQ4JzDvKw4Rei3aC/OOWPZdpA5UNblKaiI4SOj73tYazHPCx77Dm0MjEApPdjIoNavnLFY92NY7o9pIj5xLbgvj2F73CyiMUaxFxAERB00+HmmD3yIsCGLVf68emrMUE7+UAqlNlRm/CeGO8GwfDcFqy04E4O5jeJf8Rb9AuwwIhNxvPC8AAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Добавление webhook&quot;
+        title=&quot;Добавление webhook&quot;
+        src=&quot;/static/dadd381eb434893be471042c298e199b/b9e4f/add-webhook-1.png&quot;
+        srcset=&quot;/static/dadd381eb434893be471042c298e199b/cf440/add-webhook-1.png 148w,
+/static/dadd381eb434893be471042c298e199b/d2d38/add-webhook-1.png 295w,
+/static/dadd381eb434893be471042c298e199b/b9e4f/add-webhook-1.png 590w,
+/static/dadd381eb434893be471042c298e199b/f9b6a/add-webhook-1.png 885w,
+/static/dadd381eb434893be471042c298e199b/2d849/add-webhook-1.png 1180w,
+/static/dadd381eb434893be471042c298e199b/40920/add-webhook-1.png 1492w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Настроим webhook&lt;/b&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/2a09e4e34ec549e59ddb0e7f5309deb9/f787b/add-webhook-2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 89.5742832319722%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAAACXBIWXMAAAsSAAALEgHS3X78AAACQklEQVQ4y41Uy47UMBDM5yPxB4g/gAsHxAVx4ronJFjBDsvsJpPJw47zchI7TtHtSYbsPNiN1OrYaZeru7oTZFIhyQskmcD2McI23KHtBgxmRD/Yp2YWO3zrnuxZ6H5AIKVEkqTIsox8gj1ZlkukdEGWC+RC+vXi0yyny3O/FrLwMWxJJqGqBkGYVvj5KHEfK/wKye8KFEr5YFVWqKraG78XqjxYoVDSWs1rRfFS1Wh7i0D3Bk1nPP1xAhxe9gzWnm9OEwJBKT+GEUSeo9Oa2BCrukFJrJq2haGD1o7eGGQ0ROBhi/DuDnYcZ5zpaAEf5LroriMhjE/1UC/h07IUpAfKgArOAHYgn+wxUfwabHkPuAa7eI94n8AQ4PpxFGCpPtHtLYGXFzKcznxQ1TUEMeLCdn3vN0di4pwjxpSuyGHTxNdnqdMxxWsMm1b7jXF0x3qxMTCnzJWy/G2+6NrjAQ0fpsDF2xn0FJzZDlRLfl+LsDa+LNCkZNO0aElh9nXToCbGFe+RZ6VLUp6BThW9CBgLjYxqKKlZWd2KANXvDcRm49tpt4s98L9Up/+nrFp7mAgShwFZGPSdt55aZK38uvindgS0pvfjw/3H/ci+1h3M3LTPpXkGyGPHTc1suLEH8h0B2pPRci8A9TUsa0AkBVzvMJnDVPCviEeO069pDPmS55geGX6IPuP1j7d49f0NPm6/YPjzgGofI4wiP9cMZi/9CK6J8jW+wfv7T3hHdpN+A4iy1a0XaRFkSce56brNMX8BCKt4TD6eU18AAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Настройка webhook&quot;
+        title=&quot;Настройка webhook&quot;
+        src=&quot;/static/2a09e4e34ec549e59ddb0e7f5309deb9/b9e4f/add-webhook-2.png&quot;
+        srcset=&quot;/static/2a09e4e34ec549e59ddb0e7f5309deb9/cf440/add-webhook-2.png 148w,
+/static/2a09e4e34ec549e59ddb0e7f5309deb9/d2d38/add-webhook-2.png 295w,
+/static/2a09e4e34ec549e59ddb0e7f5309deb9/b9e4f/add-webhook-2.png 590w,
+/static/2a09e4e34ec549e59ddb0e7f5309deb9/f9b6a/add-webhook-2.png 885w,
+/static/2a09e4e34ec549e59ddb0e7f5309deb9/f787b/add-webhook-2.png 1151w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;
+Разберем пошагово:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Payload URL - это тот URL куда github будет слать POST-запрос при событии пуша.
+Имеет вид: &lt;a href=&quot;http://jenkins-domain/github-webhook/&quot;&gt;http://jenkins-domain/github-webhook/&lt;/a&gt;
+К примеру: &lt;a href=&quot;http://105.196.135.40:8080/github-webhook/&quot;&gt;http://105.196.135.40:8080/github-webhook/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Указываем тип данных в запросе&lt;/li&gt;
+&lt;li&gt;Указываем триггер срабатывания webhook&lt;/li&gt;
+&lt;li&gt;Добавляем webhook&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;b&gt;Добавленный webhook будет выглядеть следующим образом:&lt;/b&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 521px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/a5b7e5a84dd6bb172b947e06b70f3dd9/42fef/add-webhook-3.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 23.032629558541267%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAYAAABFA8wzAAAACXBIWXMAAAsSAAALEgHS3X78AAAA1UlEQVQY052Q227EIAxE8/9f2K66bdkEQqJALst1Icw6IW99q6WjsQYbG5qPzxu+7t+Qw4D/hhwn/LAW46TQrNuGA2MtQghERIgV5z08eZHyeHm1Jlw+5d7BWgNPtSllNIwxSNlD9BXOOwhC9gJcCLRdV7Wtyh4PdJyjlxK/QuPOZzC5woR8btto4zCoDUopKD2DTxbDEiDnAL0amu6Q807TE2k+OTY5dQeMf6EfNZ7DhPA0aNJesNGly7LUp1NBTOXkdTUeUUr5A7l0nmCdg6fBx7e8AYbugaBuQfOWAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Добавленный webhook&quot;
+        title=&quot;Добавленный webhook&quot;
+        src=&quot;/static/a5b7e5a84dd6bb172b947e06b70f3dd9/42fef/add-webhook-3.png&quot;
+        srcset=&quot;/static/a5b7e5a84dd6bb172b947e06b70f3dd9/cf440/add-webhook-3.png 148w,
+/static/a5b7e5a84dd6bb172b947e06b70f3dd9/d2d38/add-webhook-3.png 295w,
+/static/a5b7e5a84dd6bb172b947e06b70f3dd9/42fef/add-webhook-3.png 521w&quot;
+        sizes=&quot;(max-width: 521px) 100vw, 521px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Теперь когда мы запушим коммит в репозиторий, github будет слать POST-запрос по указанному URL,
+что в свою очередь должно тригернуть нашу будущую Job.&lt;/p&gt;
+&lt;h3&gt;Создание Job с jenkins-pipeline&lt;/h3&gt;
+&lt;p&gt;Jenkins-pipeline - это тип задач в Jenkins, с помощью которого мы можем пошагово описать
+необходимый процесс сборки, тестирования, деплоя и тд.
+Описывать pipeline мы будем в файле, который будет храниться в репозитории.&lt;/p&gt;
+&lt;p&gt;Сначала создадим задачу, а затем опишем pipeline.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Создаем задачу:&lt;/b&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 534px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/fb0889701c375851e7c5803f0428fe29/ef8bc/step-1.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 99.063670411985%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsSAAALEgHS3X78AAACcUlEQVQ4y6VUPW/TUBT13wCWzFWFIqZCK6pIRerSMYIuCLZu3YHSkMLGBAMTAnViLBsLEgOiqBNEgNo0oUkaJ46dD8df79l+9uG+h4raihZHXOn4Pst+x+eee/20CxcvYXXlDlbu3sTVa7OYmZnB1NQUFhcXUSgUkM/nMT09jVwulwkaBV4/vYeN1du4nL+CGwsLmL8+j2KxiOVby1haWsLc7Jx8MRvWyut4s/kKmy+e4X7pAUrlNZQfrxNK2HjySGWJUvlhJmigMEcGuoMOEnD8b2ich0hSgZQgEoEojhCLCDzk8Ad9MM8F832CpzLn7FxocchgfN1EX/+JVq2LbtOA3jAQBQxB5QuC6h5YvaYybzX/rTCJQzCjgojYQx5BRDF4wJEkCYTrIhUxUlqnpF7lND0Xmu/beLf1HLoxwl6zjx/1HsJYqK+lf1EgN52rUHq3SyXZDvkUxvCCEHEs/Uzk7t8ExxT8IT2DWIuoxMbuJ7TbOr7VTTQ6Q+y3LFSbFgKyIIuqE4RCCNQbOlyXFJJ30kf5Ec5CdS+fH5FmIaaxifDx8wE6hyb0uo7DWhsmrTvU6dZ+G/ZgPBlhRGNj1rfBGIfjhxi7DI5HXT62eaKSOXPwduslak1SZTk4NGy0qONCJCfIspJqSZKi3enAp0G2Sd3A9hXk+vSMZRsbGtzK9230R0N0LRftnq1UmkN34hlUhG4QYadqkEKulOm9Mayhh97APYH4lAVnEsrLQaMJo2dRmVwp7I88WATdHMPoO8rbOBbZCF3Px/udKh1fUh2RkUpJeqRo4pIZHV8fKjR7I1/5NnICVSKn31BGMmFTfgEHnZvXq4tfNgAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Создаем задачу&quot;
+        title=&quot;Создаем задачу&quot;
+        src=&quot;/static/fb0889701c375851e7c5803f0428fe29/ef8bc/step-1.png&quot;
+        srcset=&quot;/static/fb0889701c375851e7c5803f0428fe29/cf440/step-1.png 148w,
+/static/fb0889701c375851e7c5803f0428fe29/d2d38/step-1.png 295w,
+/static/fb0889701c375851e7c5803f0428fe29/ef8bc/step-1.png 534w&quot;
+        sizes=&quot;(max-width: 534px) 100vw, 534px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Необходимо задать имя и тип задачи:&lt;/b&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/964d9b1fc9f55aa9ec59de74c76cd321/ddc13/step-2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 74.03751233958539%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAACXBIWXMAAAsSAAALEgHS3X78AAACCklEQVQ4y31U2XLbMAzU//9bk86ktS3bOqz7pHVRV9vZArDpKG7Shx1QPFaLJUBrv9/jeDyC4+l0glLqX1QVqjSF7ziIgwCqrlE/gfdprWEdDns4tNG2bbiui3EcP0BPE1QcQ+1+Inh7Q7rboc5z1ETwTDgMA6wsL1CWJZqmIbToug5t237Aba1B1/doab3ZzG0hCr3zDp5/wfl8QlWVQtD3HaEXDANB4iBjTbHffJvxuixY1xVWEjqIkgxFUaKsakE/aIzTDD1ON9C4pbmM1pp+eJ/fYJrvhH6cIySjtR5FMv+R0+46So9TofFElgy+B+flG5TnYiJvB9rLZ3j/RD7/+v0HCxPmZY0oihEEIYIwQpykZLJ6qGV0ZPjcdlhJyczqKXIGAlZHcV7WG2FAZJfLRW7Y930kVB6i7nEhFOmblV5pfCXVgusVagOuCEn59eAjzxIxllPl2+IykAOf1CTP849utryD7RJC20vgky+sMqZ6y7IMKaksigI51RuD5xhmzKSGyJQVeymErucjDEMp7iiKHkqf69F8m4PPWEzZOF6AgNSxf6yQD2wJtuS8xl7N8/wphDBNc+mUnMAXou4emeo3pCZNPvRfwrKllmoVmjTBj++v8Kinufmre3+qe89y5LS+ImPwuvXiZqizCDW9NiW9Nrl9kLrT/DCQn1oKWIu35tBXYIV/AVtycwm7vc/vAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Задаем имя и тип задачи&quot;
+        title=&quot;Задаем имя и тип задачи&quot;
+        src=&quot;/static/964d9b1fc9f55aa9ec59de74c76cd321/b9e4f/step-2.png&quot;
+        srcset=&quot;/static/964d9b1fc9f55aa9ec59de74c76cd321/cf440/step-2.png 148w,
+/static/964d9b1fc9f55aa9ec59de74c76cd321/d2d38/step-2.png 295w,
+/static/964d9b1fc9f55aa9ec59de74c76cd321/b9e4f/step-2.png 590w,
+/static/964d9b1fc9f55aa9ec59de74c76cd321/f9b6a/step-2.png 885w,
+/static/964d9b1fc9f55aa9ec59de74c76cd321/ddc13/step-2.png 1013w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Укажем что триггером запуска задачи будет событие пуша в репозиторий:&lt;/b&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/ba49aed4fe92dbb8088e6070147d704e/dae74/step-3.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 49.25373134328358%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAAAsSAAALEgHS3X78AAABH0lEQVQoz42SWWuEQBCE/f8/LgQfYlAQvO9jvS+onerNSALZdR+KbnEsv64eo+s6mKYJ27ZhWZb0QRBg2zYsyyKa5/ltGeM4ikGSJAjDEI7joCgKTNMEvmNd1xWrMhaxfyFjGAY0TY0oipGmKfI8R5Zl0lN1XT9olVZKfaTJ/5PR9QOyvFR0AaI4FkpS6RHkoDKZ2xYLpYmfEcbFANuvEUeBEHme9yeCUPWpIh6/vzB8fmCMQsz8wbMMuZSmaRArunO8X4vQtFPfYWZ/sSSj73tUVQXf9yU7LqRVo51Z/VSd3+VSaFiWpYxJSpqT6jgOod33XfqrZZxL0Yau6wole1JSjIKV2fI2aNOXhLxrj6vTyKiszJL1drudzzz3DuEd2RT/akeVjGIAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Указываем, что триггером запуска задачи будет событие пуша в репозиторий&quot;
+        title=&quot;Указываем, что триггером запуска задачи будет событие пуша в репозиторий&quot;
+        src=&quot;/static/ba49aed4fe92dbb8088e6070147d704e/b9e4f/step-3.png&quot;
+        srcset=&quot;/static/ba49aed4fe92dbb8088e6070147d704e/cf440/step-3.png 148w,
+/static/ba49aed4fe92dbb8088e6070147d704e/d2d38/step-3.png 295w,
+/static/ba49aed4fe92dbb8088e6070147d704e/b9e4f/step-3.png 590w,
+/static/ba49aed4fe92dbb8088e6070147d704e/dae74/step-3.png 804w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Укажем откуда брать pipeline:&lt;/b&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/1af7860cad2ab99678fe11528322549b/1894d/step-4.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 72.95024526979678%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAACXBIWXMAAAsSAAALEgHS3X78AAABzUlEQVQ4y41T7VLjMBDL29+j3N97l2OAQmmBm3w6jh0ncT5aECtTM20pHJ3RxEm9sqRdJ9vtFuM4YpomeO8D+B6/xfUleO6R/aosQx1/SdM0aNsWSiloreGcw263C1iW5VuM84yuKGHW96iFtOs6JFGZtTYoGoYh/EEF35HxQO43roe3LerVClbEJbOccg6SUzULuC6KIjgoRQXB9zzPZV2g0gYqr1Dd3sCIw0DIwmN8WBKVxhikaRqeuq5lnWEjufMgJ4dagRdHizzx+npKGNd8RkIqJZgtEddZluH65hZKVHHfXshCU84V8p05EsyWefZ9/wlpluP+6i+qp0dMcnh32P9JIUEVtEhSWmNezI351WJbVRXGRZpSSo53d3CmhV6dZRjJYoaxi9FybBRB1WzSerOBagy8KN774WvLoQGHmYzjdDI2oWZ+H36Btg7L/uWU8HhsSEgFxx0m0fm+2LxBSJ2oljYjGQ/KWBSvHm9PLIhXkIUXZ1YG28oYqX/PYJ8TspIky9+HV7dyU/ox2Jp/gMZ28CLmRdbB8pWwp6rBNlfoXIdSLDK7aPF/CJExV2liIPz1+w+unwqsiwaT0WgfHoLiryxehBDvDoRvXFyDyfepfcEAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Указываем откуда брать pipeline&quot;
+        title=&quot;Указываем откуда брать pipeline&quot;
+        src=&quot;/static/1af7860cad2ab99678fe11528322549b/b9e4f/step-4.png&quot;
+        srcset=&quot;/static/1af7860cad2ab99678fe11528322549b/cf440/step-4.png 148w,
+/static/1af7860cad2ab99678fe11528322549b/d2d38/step-4.png 295w,
+/static/1af7860cad2ab99678fe11528322549b/b9e4f/step-4.png 590w,
+/static/1af7860cad2ab99678fe11528322549b/f9b6a/step-4.png 885w,
+/static/1af7860cad2ab99678fe11528322549b/2d849/step-4.png 1180w,
+/static/1af7860cad2ab99678fe11528322549b/1894d/step-4.png 1427w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Пошагово разберемся:&lt;/b&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Говорим Jenkins, что pipeline находится в репозитории&lt;/li&gt;
+&lt;li&gt;Указываем Git в качестве системы контроля версий&lt;/li&gt;
+&lt;li&gt;Указываем URL репозитория(здесь должен быть URL вашего репозитория)&lt;/li&gt;
+&lt;li&gt;Указываем ветку, которую нужно собирать при событии пуша.&lt;/li&gt;
+&lt;li&gt;Указываем путь до файла с jenkins-pipeline (от корня приложения)&lt;/li&gt;
+&lt;li&gt;Жмем “Save”&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Описываем pipeline&lt;/h3&gt;
+&lt;p&gt;В корне проекта создадим файл &lt;b&gt;jenkins.ci&lt;/b&gt; со следующим содержанием:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;jenkinsfile&quot;&gt;&lt;pre class=&quot;language-jenkinsfile&quot;&gt;&lt;code class=&quot;language-jenkinsfile&quot;&gt;pipeline {
+    agent any
+
+    stages {
+        stage(&amp;#39;Build docker image. Run tests and build app.&amp;#39;) {
+            steps {
+                git &amp;#39;https://github.com/RenatRysaev/dockerized-react&amp;#39;
+                sh &amp;#39;sudo docker build -t dockerized-react:test -f Dockerfile.test .&amp;#39;
+            }
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Именно за этим файлом Jenkins будет ходить, чтобы получить описание pipeline.
+Не будем заострять внимание, потому что pipeline достаточно декларативен.  &lt;/p&gt;
+&lt;p&gt;Вкратце: клонируется репозиторий и выполняется команда сборки контейнера,
+в котором у нас запускаются тесты и собирается приложение.  &lt;/p&gt;
+&lt;p&gt;Если упадут тесты или не соберется приложение, то задача будет считаться неудачной.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Давайте попробуем вручную запустить нашу Job:&lt;/b&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/3757c48ab05c393eac9d66b708611764/df1a7/manual-run-ci.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 41.50579150579151%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAABKUlEQVQoz6VRPU/DMBTM/98Z6YT4ASwsCEaEaJRKdGgKotBWKW1C7CS1Y8dODvuppqJigpNO8j093/uKtGnhaXqNzioE/VdGOKBtnantMeB/iAZnMQwD0tkMJa+hLUj3fU8MONWn8UDqsGAMWVGg4hXKssR6tUJVVeCcI0kSzFwx//ZcLBYUi+MYaZpSHnP/A8lQOoNmMoFxnUkp8fAYU6IxBp9FiWYvoHXntAVzpnleoGn2lKu1/kEy1MslxHgMP5C1FvP3NZRSNJISAm2TQ9QF9jWHaDiMlj7z1xWQoXCfmWyx3jJ0XXfcjzXImMH0ZYOn5w8k8x1etwpZDbztNHXt4XceGH0HDtXCQQY6t8VVojC6nWJ0k+HseoPzO47LMXBxryHbo2HAF/p2aSPOVOgvAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Ручной запуск CI&quot;
+        title=&quot;Ручной запуск CI&quot;
+        src=&quot;/static/3757c48ab05c393eac9d66b708611764/b9e4f/manual-run-ci.png&quot;
+        srcset=&quot;/static/3757c48ab05c393eac9d66b708611764/cf440/manual-run-ci.png 148w,
+/static/3757c48ab05c393eac9d66b708611764/d2d38/manual-run-ci.png 295w,
+/static/3757c48ab05c393eac9d66b708611764/b9e4f/manual-run-ci.png 590w,
+/static/3757c48ab05c393eac9d66b708611764/f9b6a/manual-run-ci.png 885w,
+/static/3757c48ab05c393eac9d66b708611764/df1a7/manual-run-ci.png 1036w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Если вы столкнулись с ошибкой “sudo: no tty present and no askpass program specified”,
+то вам нужно сделать следующее:&lt;/b&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; visudo&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;А затем добавить в файле в секцию ”# Allow members of group sudo to execute any command” следующее:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;jenkins ALL=(ALL) NOPASSWD: ALL&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Обсуждение этой проблемы на &lt;a href=&quot;https://stackoverflow.com/questions/37603621/jenkins-sudo-no-tty-present-and-no-askpass-program-specified-with-nopasswd&quot;&gt;stackoverflow&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Если вы все сделали правильно, то увидите примерно следующее:&lt;/b&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/b89c1a003b6f8fbe8805bae746b314d3/08ba8/successful-ci.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 58.057851239669425%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAYAAABiDJ37AAAACXBIWXMAABYlAAAWJQFJUiTwAAACAUlEQVQoz3VSy46bQBDk/z8jh1xySaS9JIqSHHLYlVeOH2sHAwYv2Aye4W0eBgy102M5chynpVJruqG6umY013Wx3W5h2zaKogDFMAx/5f8F9S+4hKbrOhhj/xBek/Z9j9Pp9Ad0vjeM6tq9qde5LEtUVYXj8ahQ17U6N02DOI6RJInKVKOedpl2PfV6FSLhnMOyLJimqewhMuotFgtMp1OMRiNEUYS2baHdI7klNAxD/TSZTBRI0aU+n8+xWq3UIKppt6beRi1XKQ6FQiXXL4uzBZ30sus6OM4GWZZLb/vzypcfqUmrkGzKBLqAOImxj0P4Yo9t4CMIOUQUStISbXOUaiM55CC/PyJNU2hUJOOzLFOrUJFA50Oe4zXeYxo4+OVZeOEurCqCFXgwbYaZwfA0WWO8dPFiBvK1cGgiLaSqRu1P6giktqorZEkqCQMs4x3mktTIA3j9AYZwwRIfvBQIqxBCYn/g8MMdtIluw/e32Pk+6JGTSlq17Vqc2g6bhOGz/oSPz9/x4fELxsKGXewgOgYnseDmDiyxgl974BWDlkgCetievCW6LXoi1+FlHA+zn3j/4wHvvn3CM1/DKRh4w2AwHWthYuX/hpttJGEgCfMMkTQ+zc7ekZ+ksDt1GPpB+vWKr4tHjANDYRY6WHITogmQIEKMUOYQ8SDA8h3eANSgkPIMvkBHAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Успешный CI&quot;
+        title=&quot;Успешный CI&quot;
+        src=&quot;/static/b89c1a003b6f8fbe8805bae746b314d3/b9e4f/successful-ci.png&quot;
+        srcset=&quot;/static/b89c1a003b6f8fbe8805bae746b314d3/cf440/successful-ci.png 148w,
+/static/b89c1a003b6f8fbe8805bae746b314d3/d2d38/successful-ci.png 295w,
+/static/b89c1a003b6f8fbe8805bae746b314d3/b9e4f/successful-ci.png 590w,
+/static/b89c1a003b6f8fbe8805bae746b314d3/f9b6a/successful-ci.png 885w,
+/static/b89c1a003b6f8fbe8805bae746b314d3/08ba8/successful-ci.png 968w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Готово, теперь можете протестировать как работает ваш CI, сделав пуш в репозиторий.&lt;/p&gt;
+&lt;p&gt;Обычно в CI добавляют разные механизмы для того, чтобы узнать как прошла сборка.
+Это может быть сообщение в мессенджер со статусом, или примитивный статус в README,
+а может быть и то и другое.&lt;/p&gt;
+&lt;p&gt;Если вы хотите прикрутить что-то подобное, то можете начать с &lt;a href=&quot;https://www.youtube.com/watch?v=clQEdNdOBm0&quot;&gt;этого&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;В следующей финальной части мы разберемся с CD(Continuous Delivery).&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 2.]]></title><description><![CDATA[Это вторая часть, в которой мы разберемся с тем как подготовить Docker-образ с React-приложением для тестирования и развертывания на…]]></description><link>https://rysaev.dev/react-ci-cd-2/</link><guid isPermaLink="false">https://rysaev.dev/react-ci-cd-2/</guid><pubDate>Mon, 22 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;Это вторая часть, в которой мы разберемся с тем как подготовить Docker-образ с React-приложением для тестирования и развертывания на удаленном сервере&lt;/h3&gt;
 &lt;p&gt;&lt;b&gt;В &lt;a href=&quot;https://rysaev.dev/react-ci-cd-1/&quot;&gt;прошлой части&lt;/a&gt; мы настраивали окружение для
 разработки нашего приложения.&lt;/b&gt;&lt;/p&gt;
 &lt;p&gt;&lt;b&gt;Сегодня мы подготовим два Docker-образа для тестирования и деплоя приложения + настроим Nginx для раздачи статики.&lt;/b&gt;&lt;/p&gt;
@@ -95,8 +473,7 @@
 &lt;li&gt;Для тестирования&lt;/li&gt;
 &lt;li&gt;Для продакшена&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;b&gt;В следующей статье мы будем разбираться с тем как с помощью Jenkins развернуть Docker-контейнер
-на удаленном сервере.&lt;/b&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 1.]]></title><description><![CDATA[Я планирую серию статей, в которых постараюсь раскрыть следующие темы: Docker для разработки React-приложения Docker для развертывания React…]]></description><link>https://rysaev.dev/react-ci-cd-1/</link><guid isPermaLink="false">https://rysaev.dev/react-ci-cd-1/</guid><pubDate>Sun, 21 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Я планирую серию статей, в которых постараюсь раскрыть следующие темы:&lt;/h2&gt;
+&lt;p&gt;&lt;b&gt;В следующей статье мы будем разбираться CI(Continuous Integration)&lt;/b&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Используем Docker для разработки и развертывания React-приложений. Часть 1.]]></title><description><![CDATA[Я планирую серию статей, в которых постараюсь раскрыть следующие темы: Docker для разработки React-приложения Docker для развертывания React…]]></description><link>https://rysaev.dev/react-ci-cd-1/</link><guid isPermaLink="false">https://rysaev.dev/react-ci-cd-1/</guid><pubDate>Sun, 21 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;Я планирую серию статей, в которых постараюсь раскрыть следующие темы:&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&quot;https://rysaev.dev/react-ci-cd-1/&quot;&gt;&lt;b&gt;Docker для разработки React-приложения&lt;/b&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://rysaev.dev/react-ci-cd-2/&quot;&gt;&lt;b&gt;Docker для развертывания React-приложения + Nginx для раздачи статики&lt;/b&gt;&lt;/a&gt;&lt;/li&gt;
